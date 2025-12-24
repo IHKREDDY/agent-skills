@@ -14,9 +14,15 @@ from pathlib import Path
 class JiraConfig:
     def __init__(self, config_file: Optional[str] = None):
         if config_file is None:
-            # Look for config file in work-on-ticket directory
-            script_dir = Path(__file__).parent.parent
-            config_file = script_dir / '.jira-config'
+            # Look for config file in project root (current working directory)
+            # This works when running from any project that includes skills as submodule
+            cwd = Path.cwd()
+            config_file = cwd / '.jira-config'
+            
+            # Fallback: check in work-on-ticket directory (for standalone use)
+            if not config_file.exists():
+                script_dir = Path(__file__).parent.parent
+                config_file = script_dir / '.jira-config'
         
         self.config_file = Path(config_file)
         self.config = configparser.ConfigParser()
